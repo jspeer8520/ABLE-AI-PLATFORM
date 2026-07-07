@@ -81,3 +81,6 @@ apps/mobile/**/*.xcuserstate
 apps/mobile/**/DerivedData/
 apps/mobile/**/.build/
 apps/mobile/**/xcuserdata/
+
+.env.local
+.env.production

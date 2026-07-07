@@ -54,6 +54,8 @@ coverage/
 
 *.pem
 *.key
+secretsd
+
 
 
 # TypeScript incremental build info

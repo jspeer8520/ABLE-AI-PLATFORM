@@ -32,7 +32,7 @@ export default function LoginPage() {
     setUnverified(false);
     try {
       await login(values.email, values.password);
-      router.replace('/dashboard');
+      router.replace('/dashboard' as const);
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.status === 403) setUnverified(true);

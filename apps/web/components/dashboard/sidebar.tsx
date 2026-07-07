@@ -6,7 +6,7 @@ import { clsx } from 'clsx';
 
 // Only routes that actually exist are listed. Additional sections will be added
 // here as their pages are built.
-const navigation = [{ name: 'Dashboard', href: '/dashboard' }];
+const navigation = [{ name: 'Dashboard', href: '/dashboard' }] as const;
 
 export default function Sidebar() {
   const pathname = usePathname();

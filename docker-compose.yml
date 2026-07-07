@@ -1,42 +1,44 @@
-version: '3.8'
-
+# Local development dependency stack for the ABLE backend.
+#
+# Usage:
+#   docker compose up -d          # start Postgres + Redis
+#   pnpm --filter @able/db db:push
+#   pnpm --filter @able/backend dev
+#
+# The backend itself runs on the host via `tsx` (see backend/README). A
+# production container image is defined in backend/Dockerfile; note it requires
+# the @able/db package to ship compiled JS (it currently ships TypeScript
+# source), tracked as a workspace follow-up.
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16
     container_name: able-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: able
+      POSTGRES_PASSWORD: able
       POSTGRES_DB: able
     ports:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      test: ['CMD-SHELL', 'pg_isready -U able -d able']
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
 
-  # Optional: pgAdmin for visual database management
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: able-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@able.local
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - '5050:80'
-    depends_on:
-      - postgres
+  redis:
+    image: redis:7
+    container_name: able-redis
     restart: unless-stopped
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
-    driver: local
-
-networks:
-  default:
-    name: able-network

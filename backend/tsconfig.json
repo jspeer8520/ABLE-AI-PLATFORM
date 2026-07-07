@@ -1,0 +1,21 @@
+{
+  "extends": "../tsconfig.base.json",
+
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+
+    // The backend is run via `tsx` in development and consumes workspace
+    // packages (e.g. @able/db) that ship TypeScript source through the
+    // "import" export condition. Bundler resolution reads those conditions and
+    // allows extensionless relative imports, matching the runtime loader.
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+
+    
+  },
+
+  "include": ["src/**/*.ts"],
+
+  "exclude": ["node_modules", "dist", "tests", "**/*.test.ts", "jest.config.js", "jest.setup.ts"]
+}

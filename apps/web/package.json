@@ -1,39 +1,41 @@
 {
-  "name": "able-web",
+  "name": "@able/web",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
+
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
-    "test": "vitest"
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "check": "pnpm lint && pnpm type-check"
   },
+
   "dependencies": {
-    "@clerk/nextjs": "^0.30.0",
-    "@stripe/react-stripe-js": "^2.4.0",
-    "@stripe/stripe-js": "^3.0.0",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
-    "next": "^14.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-hook-form": "^7.48.0",
-    "sonner": "^1.2.0",
-    "tailwind-merge": "^2.3.0",
-    "tailwindcss": "^3.4.0",
-    "zod": "^3.22.0"
+    "@able/types": "workspace:*",
+
+    "next": "catalog:nextjs",
+    "react": "catalog:nextjs",
+    "react-dom": "catalog:nextjs",
+
+    "react-hook-form": "catalog:ui",
+    "@hookform/resolvers": "^3.9.1",
+    "zod": "catalog:ui",
+    "clsx": "catalog:ui"
   },
+
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@types/react": "^18.2.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "autoprefixer": "^10.4.0",
-    "eslint": "^8.57.0",
-    "postcss": "^8.4.0",
-    "typescript": "^5.3.0",
-    "vitest": "^1.0.0"
+    "@types/node": "catalog:dev",
+    "@types/react": "catalog:dev",
+    "@types/react-dom": "catalog:dev",
+    "typescript": "catalog:dev",
+
+    "eslint": "catalog:dev",
+    "eslint-config-next": "^15.1.0",
+
+    "tailwindcss": "catalog:ui",
+    "postcss": "^8.4.49",
+    "autoprefixer": "^10.4.20"
   }
 }

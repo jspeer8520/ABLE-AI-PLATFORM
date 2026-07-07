@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base theme is a Material 3 splash/starting theme; the actual UI colours
+         are driven by the Compose theme in ui/theme. -->
+    <style name="Theme.AbleInbox" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

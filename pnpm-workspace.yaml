@@ -1,45 +1,56 @@
 packages:
-  - 'packages/*'
-  - 'apps/*'
+  # apps/web is the only Node workspace under apps/.
+  # apps/mobile is a native iOS/Android app (no package.json) and is intentionally excluded.
+  - "apps/web"
+  - "backend"
+  - "packages/*"
+  # services/* is a glob reserved for future backend services; it currently matches
+  # nothing, which pnpm treats as an empty set (no error).
+  - "services/*"
+  # NOTE: "ai" was removed here because ai/ contains prompt/workflow source only and has
+  # no package.json, which would make `pnpm install` error on a literal path.
 
 catalogs:
+
   dev:
-    typescript: ^5.3.0
-    eslint: ^8.57.0
-    prettier: ^3.0.0
-    vitest: ^1.0.0
-    '@typescript-eslint/eslint-plugin': ^6.0.0
-    '@typescript-eslint/parser': ^6.0.0
+    typescript: ^5.7.0
+    eslint: ^9.0.0
+    prettier: ^3.3.0
+    vitest: ^2.1.0
+    "@typescript-eslint/eslint-plugin": ^8.0.0
+    "@typescript-eslint/parser": ^8.0.0
+    "@types/node": ^22.0.0
+    "@types/react": ^18.2.0
+    "@types/react-dom": ^18.2.0
 
   nextjs:
-    next: ^14.0.0
-    react: ^18.2.0
-    react-dom: ^18.2.0
+    next: ^15.1.0
+    react: ^19.0.0
+    react-dom: ^19.0.0
 
   db:
-    prisma: ^5.7.0
-    '@prisma/client': ^5.7.0
+    prisma: ^6.0.0
+    "@prisma/client": ^6.0.0
 
   ui:
-    'react-hook-form': ^7.48.0
-    zod: ^3.22.0
-    'class-variance-authority': ^0.7.0
-    clsx: ^2.0.0
-    'tailwind-merge': ^2.3.0
-    'tailwindcss': ^3.4.0
+    zod: ^3.23.0
+    "react-hook-form": ^7.54.0
+    "class-variance-authority": ^0.7.1
+    clsx: ^2.1.1
+    "tailwind-merge": ^2.6.0
+    tailwindcss: ^3.4.17
 
   stripe:
-    stripe: ^14.0.0
-    '@stripe/react-stripe-js': ^2.4.0
-    '@stripe/stripe-js': ^3.0.0
+    stripe: ^17.5.0
+    "@stripe/react-stripe-js": ^3.1.0
+    "@stripe/stripe-js": ^5.2.0
 
   auth:
-    '@clerk/nextjs': ^0.30.0
-    '@clerk/types': ^4.2.0
+    "@clerk/nextjs": ^7.5.13
+    "@clerk/types": ^4.101.20
 
   email:
-    resend: ^3.0.0
+    resend: ^4.0.0
 
   ai:
-    openai: ^4.28.0
-    '@anthropic-ai/sdk': ^0.10.0
+    ai: ^4.0.0

@@ -68,11 +68,11 @@ React Server Components + client state where required
 
 Framework:
 
-FastAPI
+Express.js (Node.js)
 
 Language:
 
-Python
+TypeScript
 
 Responsibilities:
 
@@ -80,6 +80,14 @@ Responsibilities:
 - AI orchestration
 - API services
 - Security enforcement
+
+> Decision (Sprint 1, 2026-07-07): The backend service is implemented in
+> Express.js + TypeScript rather than FastAPI/Python. This keeps the entire
+> stack in one language (TypeScript) and one toolchain (the pnpm workspace,
+> Prisma, Zod), shares types with the Next.js frontend, and matches the
+> existing `backend/` scaffold. The originally-specified FastAPI/Python option
+> is superseded. A dedicated `TECH_STACK_DECISION.md` should capture this in
+> full; it did not exist at decision time.
 
 ---
 

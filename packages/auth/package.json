@@ -1,0 +1,15 @@
+{
+  "name": "@able/auth",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./middleware": "./middleware.ts",
+    "./clerk": "./clerk.ts"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^0.30.0",
+    "@clerk/types": "^4.2.0"
+  }
+}

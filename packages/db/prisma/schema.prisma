@@ -1,0 +1,279 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER & ORGANIZATION
+// ============================================================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizations UserOrganization[]
+  products      Product[]
+  orders        Order[]
+  subscriptions Subscription[]
+  contacts      Contact[]
+  emails        Email[]
+  workflows     Workflow[]
+  usageLogs     UsageLog[]
+  creditBalance CreditBalance?
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+model Organization {
+  id    String   @id @default(cuid())
+  name  String
+  slug  String   @unique
+  image String?
+  createdAt DateTime @default(now())
+
+  users         UserOrganization[]
+  products      Product[]
+  orders        Order[]
+  subscriptions Subscription[]
+  contacts      Contact[]
+  emails        Email[]
+  workflows     Workflow[]
+  usageLogs     UsageLog[]
+
+  @@index([createdAt])
+}
+
+model UserOrganization {
+  id String @id @default(cuid())
+  userId String
+  organizationId String
+  role String @default("member") // "owner" | "member"
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+}
+
+// ============================================================================
+// BILLING
+// ============================================================================
+
+model Plan {
+  id String @id @default(cuid())
+  name String // "Free" | "Creator" | "Pro"
+  price Int // cents
+  stripePriceId String?
+  maxProducts Int @default(10)
+  maxEmails Int @default(1000)
+  maxWorkflows Int @default(5)
+  monthlyCredits Int @default(1000)
+  createdAt DateTime @default(now())
+
+  subscriptions Subscription[]
+
+  @@unique([name])
+}
+
+model Subscription {
+  id String @id @default(cuid())
+  organizationId String
+  userId String
+  planId String
+  stripeSubscriptionId String?
+  status String @default("active")
+  currentPeriodEnd DateTime?
+  cancelAtPeriodEnd Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([status])
+}
+
+// ============================================================================
+// PRODUCTS & ORDERS
+// ============================================================================
+
+model Product {
+  id String @id @default(cuid())
+  organizationId String
+  userId String
+  name String
+  slug String
+  description String?
+  price Int // cents
+  type String // "course" | "ebook" | "template"
+  image String?
+  stripePriceId String?
+  published Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  creator User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@index([published])
+}
+
+model Order {
+  id String @id @default(cuid())
+  organizationId String
+  productId String
+  customerId String
+  userId String
+  amount Int // cents
+  status String @default("completed")
+  stripeSessionId String?
+  customerEmail String
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customer Contact @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// CONTACTS
+// ============================================================================
+
+model Contact {
+  id String @id @default(cuid())
+  organizationId String
+  email String
+  name String?
+  status String @default("lead") // "lead" | "customer"
+  ltv Int @default(0) // cents
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@unique([organizationId, email])
+  @@index([organizationId])
+  @@index([status])
+}
+
+// ============================================================================
+// EMAILS
+// ============================================================================
+
+model Email {
+  id String @id @default(cuid())
+  organizationId String
+  userId String
+  name String
+  subject String
+  htmlBody String
+  variables String @default("[]") // JSON
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  creator User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaigns EmailCampaign[]
+
+  @@index([organizationId])
+}
+
+model EmailCampaign {
+  id String @id @default(cuid())
+  emailId String
+  organizationId String
+  sentCount Int @default(0)
+  status String @default("draft") // "draft" | "sent"
+  sentAt DateTime?
+  createdAt DateTime @default(now())
+
+  email Email @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@index([emailId])
+  @@index([organizationId])
+}
+
+// ============================================================================
+// WORKFLOWS
+// ============================================================================
+
+model Workflow {
+  id String @id @default(cuid())
+  organizationId String
+  userId String
+  name String
+  trigger String // "purchase" | "new_contact"
+  enabled Boolean @default(true)
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  creator User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actions WorkflowAction[]
+
+  @@index([organizationId])
+  @@index([trigger])
+}
+
+model WorkflowAction {
+  id String @id @default(cuid())
+  workflowId String
+  type String // "send_email" | "create_contact"
+  config String // JSON
+  position Int
+  createdAt DateTime @default(now())
+
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+}
+
+// ============================================================================
+// USAGE & CREDITS
+// ============================================================================
+
+model UsageLog {
+  id String @id @default(cuid())
+  organizationId String
+  userId String
+  feature String // "email_send" | "product_create"
+  costInCredits Int @default(0)
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([feature])
+  @@index([createdAt])
+}
+
+model CreditBalance {
+  id String @id @default(cuid())
+  userId String @unique
+  balance Int @default(1000)
+  monthlyAllocation Int @default(1000)
+  resetAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([resetAt])
+}

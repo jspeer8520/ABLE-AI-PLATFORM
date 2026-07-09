@@ -17,28 +17,27 @@
     "@stripe/react-stripe-js": "^6.7.0",
     "@stripe/stripe-js": "^9.9.0",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
-    "@supabase/auth-helpers-react": "^0.15.0",
     "@supabase/supabase-js": "^2.110.1",
     "@tanstack/react-query": "^5.101.2",
-    "clsx": "catalog:ui",
-    "next": "catalog:nextjs",
+    "clsx": "^2.1.0",
+    "next": "15.1.0",
     "next-themes": "^0.4.6",
-    "react": "catalog:nextjs",
-    "react-dom": "catalog:nextjs",
-    "react-hook-form": "catalog:ui",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.51.3",
     "stripe": "^22.3.0",
-    "zod": "catalog:ui"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "catalog:dev",
-    "@types/react": "catalog:dev",
-    "@types/react-dom": "catalog:dev",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "autoprefixer": "^10.4.20",
-    "eslint": "catalog:dev",
+    "eslint": "^9.0.0",
     "eslint-config-next": "^15.1.0",
     "postcss": "^8.4.49",
     "prisma": "^7.8.0",
-    "tailwindcss": "catalog:ui",
-    "typescript": "catalog:dev"
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.7.0"
   }
 }

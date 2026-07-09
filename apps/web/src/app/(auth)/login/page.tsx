@@ -1,129 +1,81 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, ShieldCheck, Sparkles, Zap } from "lucide-react";
-
-import { ApiError } from "@/app/lib/api";
-import { loginSchema, type LoginInput } from "@/app/lib/validation";
-import { useAuth } from "../../providers";
-import { Input } from "@/app/components/ui/input";
+import { useAuth } from "@/providers/use-auth"; // adjust if your hook lives elsewhere
+import { ApiError } from "@/lib/api";      // adjust if needed
 import { Button } from "@/app/components/ui/button";
 
+const LoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6)
+});
 
-export const runtime = "nodejs"; // Prevent Supabase Edge runtime crash
+type LoginInput = z.infer<typeof LoginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { supabase } = useAuth();
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
-  const [message, setMessage] = useState("");
+  const { login } = useAuth();
+  const [unverified, setUnverified] = useState(false);
 
   const form = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
-      password: "",
-    },
+      password: ""
+    }
   });
 
   async function onSubmit(values: LoginInput) {
-    setStatus("loading");
-    setMessage("");
+    try {
+      await login(values.email, values.password);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: values.email,
-      password: values.password,
-    });
-
-    if (error) {
-      setStatus("error");
-      setMessage(error.message);
-      return;
+      // ⭐ Typed route fix
+      router.replace("/dashboard" as const);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.status === 403) {
+          setUnverified(true);
+        }
+      }
     }
-
-    router.push("/dashboard");
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4">
-      <div className="w-full max-w-md space-y-6">
-        <h1 className="text-2xl font-semibold text-center">Welcome Back</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen px-6">
+      <h1 className="text-3xl font-semibold mb-6">Login</h1>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <Input
-              type="email"
-              placeholder="Email address"
-              {...form.register("email")}
-            />
-            {form.formState.errors.email && (
-              <p className="text-red-500 text-sm mt-1">
-                {form.formState.errors.email.message}
-              </p>
-            )}
-          </div>
-
-          <div className="relative">
-            <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              {...form.register("password")}
-            />
-
-            <button
-              type="button"
-              className="absolute right-3 top-3 text-gray-600"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-
-            {form.formState.errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {form.formState.errors.password.message}
-              </p>
-            )}
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={status === "loading"}
-          >
-            {status === "loading" ? "Signing in..." : "Login"}
-          </Button>
-        </form>
-
-        {message && (
-          <p
-            className={`text-center text-sm ${
-              status === "error" ? "text-red-500" : "text-green-500"
-            }`}
-          >
-            {message}
-          </p>
-        )}
-
-        <p className="text-center text-sm text-gray-600">
-          Need an account?{" "}
-          <Link href="/signup" className="text-blue-600 underline">
-            Create one
-          </Link>
+      {unverified && (
+        <p className="text-red-600 mb-4">
+          Your account is not verified. Please check your email.
         </p>
+      )}
 
-        <p className="text-center text-sm text-gray-600">
-          Forgot your password?{" "}
-          <Link href="/forgot-password" className="text-blue-600 underline">
-            Reset it
-          </Link>
-        </p>
-      </div>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full max-w-sm flex flex-col gap-4"
+      >
+        <input
+          type="email"
+          placeholder="Email"
+          {...form.register("email")}
+          className="border px-3 py-2 rounded"
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          {...form.register("password")}
+          className="border px-3 py-2 rounded"
+        />
+
+        <Button type="submit" className="w-full">
+          Login
+        </Button>
+      </form>
     </div>
   );
 }

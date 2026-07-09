@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useAuth } from '../providers';
+import { useAuth } from '@/app/providers';
 import { Message } from './useMessages';
 
 export const useMessage = (messageId: string | null) => {

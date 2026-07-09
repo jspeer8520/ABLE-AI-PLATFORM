@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useAuth } from '../providers';
+import { useAuth } from '@/app/providers';
 
 export interface Message {
   id: string;

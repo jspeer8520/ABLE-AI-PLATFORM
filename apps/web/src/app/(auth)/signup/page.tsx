@@ -16,7 +16,7 @@ import {
 
 import { ApiError } from "@/app/lib/api";
 import { signupSchema, type SignupInput } from "@/app/lib/validation";
-import { useAuth } from "@/providers";
+import { useAuth } from "@/app/providers";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 

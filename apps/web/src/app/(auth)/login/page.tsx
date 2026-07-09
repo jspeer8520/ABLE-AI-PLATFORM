@@ -30,10 +30,12 @@ export default function LoginPage() {
   const onSubmit = handleSubmit(async (values) => {
     setServerError(null);
     setUnverified(false);
+    
     try {
       await login(values.email, values.password);
-      router.replace('/dashboard' as const);
+      router.push('/dashboard' as any);
     } catch (error) {
+      console.error('Login failed:', error);
       if (error instanceof ApiError) {
         if (error.status === 403) setUnverified(true);
         setServerError(error.message);

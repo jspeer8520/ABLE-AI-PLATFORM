@@ -47,7 +47,7 @@ export default function Header() {
             aria-expanded={open}
             className="flex items-center gap-2 rounded-full border border-gray-200 py-1 pl-1 pr-3 text-sm hover:bg-gray-50"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
               {initial}
             </span>
             <span className="max-w-[12rem] truncate text-gray-700">{email}</span>

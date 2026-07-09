@@ -1,39 +1,30 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useAPI } from './useAPI';
+import { useAuth } from '@/app/providers/auth-provider';
 import { Message } from './useMessages';
 
 export const useMessage = (messageId: string | null) => {
-  const { request } = useAPI();
+  const { authFetch } = useAuth();
   const [message, setMessage] = useState<Message | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchMessage = useCallback(async () => {
     if (!messageId) return;
-
     try {
       setIsLoading(true);
       setError(null);
-
-      const data = await request<Message>(`/api/messages/${messageId}`);
+      const data = await authFetch<Message>(`/api/messages/${messageId}`);
       setMessage(data);
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to fetch message';
-      setError(errorMessage);
+      setError(err instanceof Error ? err.message : 'Failed to fetch message');
     } finally {
       setIsLoading(false);
     }
-  }, [messageId, request]);
+  }, [messageId, authFetch]);
 
   useEffect(() => {
     fetchMessage();
   }, [fetchMessage]);
 
-  return {
-    message,
-    isLoading,
-    error,
-    refetch: fetchMessage,
-  };
+  return { message, isLoading, error, refetch: fetchMessage };
 };

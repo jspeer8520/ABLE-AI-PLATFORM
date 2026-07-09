@@ -3,7 +3,7 @@ import type { HTMLAttributes } from 'react';
 export function Card({ className = '', ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={['rounded-lg border border-gray-200 bg-white shadow-sm', className].join(' ')}
+      className={['rounded-xl border border-gray-200 bg-white shadow-sm', className].join(' ')}
       {...props}
     />
   );
@@ -14,7 +14,7 @@ export function CardHeader({ className = '', ...props }: HTMLAttributes<HTMLDivE
 }
 
 export function CardTitle({ className = '', ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={['text-lg font-semibold text-gray-900', className].join(' ')} {...props} />;
+  return <h3 className={['text-lg font-semibold text-ink', className].join(' ')} {...props} />;
 }
 
 export function CardDescription({ className = '', ...props }: HTMLAttributes<HTMLParagraphElement>) {
@@ -26,5 +26,5 @@ export function CardContent({ className = '', ...props }: HTMLAttributes<HTMLDiv
 }
 
 export function CardFooter({ className = '', ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={['flex items-center p-6 pt-0', className].join(' ')} {...props} />;
+  return <div className={['flex items-center gap-3 p-6 pt-0', className].join(' ')} {...props} />;
 }

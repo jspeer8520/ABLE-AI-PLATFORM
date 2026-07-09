@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 
 export default function ProfilePage() {
   const { user } = useAuth();
-  const [name, setName] = useState(user?.name ?? '');
+  const [name, setName] = useState(user?.user_metadata?.full_name ?? '');
   const [bio, setBio] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from "@/providers/use-auth"; // adjust if your hook lives elsewhere
-import { ApiError } from "@/lib/api";      // adjust if needed
+import { useAuth } from "@/app/providers/use-auth";
+import { ApiError } from "@/app/lib/api";
 import { Button } from "@/app/components/ui/button";
 
 const LoginSchema = z.object({

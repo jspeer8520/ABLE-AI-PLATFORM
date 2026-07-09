@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { AuthProvider } from "@/app/providers";
+import { useAuth } from '@/app/providers/auth-provider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import {
@@ -23,33 +23,30 @@ const QUICK_ACTIONS = [
   { href: '/billing', icon: CreditCard, label: 'Billing', desc: 'Plan & invoices' },
 ];
 
-export const runtime = "nodejs";
+export const runtime = 'nodejs';
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
-  const displayName = user.name?.trim() || user.email;
-  const source: string = user.name?.trim() || user.email;
+  const displayName =
+    user?.user_metadata?.full_name?.trim() || user?.email || 'User';
+
+  const source: string =
+    user?.user_metadata?.full_name?.trim() || user?.email || '';
 
   const initials = source
     .split(/[\s.@]+/)
     .filter((part: string) => part.length > 0)
     .slice(0, 2)
-    .map((part: string) => part[0]?.toUpperCase() ?? "")
-    .join("");
+    .map((part: string) => part[0]?.toUpperCase() ?? '')
+    .join('');
 
+  const isVerified = !!user?.email_confirmed_at;
 
-
-
-
-  // TODO: wire to your actual resend-verification endpoint once it exists.
-  // Left as a stub so the button is functional-looking without inventing an API shape.
   const handleResend = async () => {
     setResending(true);
     try {
@@ -62,7 +59,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header with avatar instead of plain text-only greeting */}
+      {/* Header */}
       <div className="flex items-center gap-4">
         <div className="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-brand-100 text-lg font-semibold text-brand-700">
           {initials}
@@ -73,14 +70,14 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Actionable banner instead of a passive status card — only shows when relevant */}
-      {!user.emailVerified && (
+      {/* Email verification banner */}
+      {!isVerified && (
         <div className="flex items-start gap-3 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
           <AlertTriangle className="mt-0.5 h-5 w-5 flex-none text-yellow-600" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-yellow-800">Your email isn't verified yet</p>
+            <p className="text-sm font-medium text-yellow-800">Your email isn&apos;t verified yet</p>
             <p className="mt-0.5 text-sm text-yellow-700">
-              Verify {user.email} to unlock all features.
+              Verify {user?.email} to unlock all features.
             </p>
           </div>
           <Button
@@ -94,7 +91,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Quick actions — turns the dashboard into a launch point, not just a status page */}
+      {/* Quick actions */}
       <div>
         <h2 className="text-sm font-semibold text-gray-500">Quick actions</h2>
         <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -116,8 +113,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Account details consolidated into one table instead of 4 separate cards —
-          same info, less scanning, less white space */}
+      {/* Account details */}
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-medium text-gray-500">Account details</CardTitle>
@@ -128,12 +124,12 @@ export default function DashboardPage() {
               <dt className="flex items-center gap-2 text-sm text-gray-500">
                 <Mail className="h-4 w-4" /> Email
               </dt>
-              <dd className="text-sm font-medium text-ink">{user.email}</dd>
+              <dd className="text-sm font-medium text-ink">{user?.email}</dd>
             </div>
             <div className="flex items-center justify-between px-4 py-3">
               <dt className="text-sm text-gray-500">Verification</dt>
               <dd>
-                {user.emailVerified ? (
+                {isVerified ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Verified
                   </span>
@@ -156,9 +152,9 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Settings shortcut row */}
+      {/* Settings shortcut */}
       <Link
-        href="/settings"
+        href={'/settings' as any}
         className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 transition hover:border-brand-300 hover:text-ink"
       >
         <span className="flex items-center gap-2">

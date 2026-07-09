@@ -1,4 +1,4 @@
-import { apiRequest, type AuthUser, type AuthTokens } from '@/lib/api';
+import { apiRequest, type AuthUser, type AuthTokens } from '@/app/lib/api';
 
 interface LoginResponse {
   user: AuthUser;

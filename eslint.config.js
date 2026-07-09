@@ -2,16 +2,15 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
-/**
- * Root flat ESLint config for the ABLE workspace.
- *
- * - JavaScript files get the ESLint recommended rules.
- * - TypeScript files additionally get typescript-eslint's recommended rules
- *   (non type-checked, so lint stays fast and doesn't require a project build).
- */
 export default tseslint.config(
   {
-    ignores: ['**/node_modules/**', '**/.next/**', '**/dist/**', '**/.turbo/**', '**/coverage/**'],
+    ignores: [
+      '**/node_modules/**',
+      '**/.next/**',
+      '**/dist/**',
+      '**/.turbo/**',
+      '**/coverage/**'
+    ],
   },
 
   {
@@ -28,6 +27,16 @@ export default tseslint.config(
     languageOptions: {
       globals: { ...globals.node },
     },
+
+    // ⭐⭐ THIS IS THE IMPORTANT PART ⭐⭐
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: './tsconfig.json',   // ESLint will read your paths here
+        },
+      },
+    },
+
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useAuth } from '../../providers';
+import { ApiError } from '@/app/lib/api';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Check, CreditCard, Download, Mail, Package, Workflow, X, Zap } from 'lucide-react';
@@ -27,9 +29,8 @@ type Subscription = {
 const formatPrice = (cents: number) =>
   cents === 0 ? '$0' : `$${(cents / 100).toFixed(0)}`;
 
-export const runtime = "nodejs";
-
 export default function BillingPage() {
+  const { authFetch } = useAuth();
   const searchParams = useSearchParams();
   const checkoutStatus = searchParams.get('checkout');
 
@@ -43,17 +44,10 @@ export default function BillingPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [plansRes, subRes] = await Promise.all([
-          fetch('/api/billing/plans'),
-          fetch('/api/billing/subscription'),
+        const [plansData, subData] = await Promise.all([
+          authFetch<Plan[]>('/api/billing/plans'),
+          authFetch<{ subscription: Subscription; plan: Plan }>('/api/billing/subscription'),
         ]);
-
-        if (!plansRes.ok || !subRes.ok) {
-          throw new Error('Failed to load billing data');
-        }
-
-        const plansData: Plan[] = await plansRes.json();
-        const subData: { subscription: Subscription; plan: Plan } = await subRes.json();
 
         setPlans(plansData);
         setCurrentPlan(subData.plan);
@@ -65,28 +59,23 @@ export default function BillingPage() {
       }
     }
     load();
-  }, []);
+  }, [authFetch]);
 
   const handleUpgrade = async (planId: string) => {
     setUpgrading(planId);
     setError(null);
     try {
-      const res = await fetch('/api/billing/checkout', {
+      const data = await authFetch<{ url: string }>('/api/billing/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId }),
+        body: { planId },
       });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error ?? 'Checkout failed');
-      }
 
       // Full navigation, not router.push — Stripe Checkout is a
       // Stripe-hosted page outside your Next.js app.
       window.location.href = data.url;
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong starting checkout.');
+      const message = e instanceof ApiError ? e.message : 'Something went wrong starting checkout.';
+      setError(message);
       setUpgrading(null);
     }
   };

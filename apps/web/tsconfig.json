@@ -1,23 +1,31 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "noImplicitAny": true,
+    "strictNullChecks": true,
     "moduleResolution": "node",
-    "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "plugins": [
-      {
-        "name": "next"
-      }
+      { "name": "next" }
     ],
+
+    "baseUrl": "src",
+
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["*"],
+      "@app/*": ["app/*"],
+      "@components/*": ["components/*"],
+      "@ui/*": ["ui/*"],
+      "@lib/*": ["lib/*"],
+      "@hooks/*": ["hooks/*"],
+      "@providers/*": ["src/app/providers/*"]
     },
+
     "noEmit": true,
     "incremental": true,
     "jsx": "preserve"
   },
+
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -25,7 +33,6 @@
     "**/*.d.ts",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+
+  "exclude": ["node_modules"]
 }

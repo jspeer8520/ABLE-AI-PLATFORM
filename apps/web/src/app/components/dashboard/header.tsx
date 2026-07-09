@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { useAuth } from '@/app/providers/auth-provider';
+import { AuthProvider } from "@/app/providers";
 
 export default function Header() {
   const { user, logout } = useAuth();
